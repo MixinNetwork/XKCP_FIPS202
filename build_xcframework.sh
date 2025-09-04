@@ -29,12 +29,17 @@ build_arch() {
 
     OBJ_DIR="$BUILD_DIR/obj_$PLATFORM"
     mkdir -p "$OBJ_DIR"
-
+    if [[ "$SDK" == "iphonesimulator" ]]; then
+        MIN_FLAG="-mios-simulator-version-min=$IOS_VERSION_MIN"
+    else
+        MIN_FLAG="-mios-version-min=$IOS_VERSION_MIN"
+    fi
+    
     for SRC_FILE in "$SRC_DIR"/*.c; do
         OBJ_FILE="$OBJ_DIR/$(basename "${SRC_FILE%.c}.o")"
         clang -arch "$ARCH" \
               -isysroot "$(xcrun --sdk $SDK --show-sdk-path)" \
-              -mios-version-min="$IOS_VERSION_MIN" \
+              $MIN_FLAG \
               -Os \
               -I"$SRC_DIR" \
               -c "$SRC_FILE" \
